@@ -1,36 +1,35 @@
 import os
-
 from flask import Flask, request
 import whisper
-from tempfile import NamedTemporaryFile
+import shutil
 
 # Load the model
 model = whisper.load_model('small')
 app = Flask(__name__)
 
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET'])
 def handler():
-    if not request.files:
-        # If the user didn't submit any files, return an error.
-        return {'error': 'No files were submitted.'}, 400
+    # Get the filename from the query parameters
+    filename = request.args.get('filename')
+    if not filename:
+        # If filename is not provided, return an error.
+        return {'error': 'No filename provided in the request.'}, 400
 
-    results = []
+    # Define the path to the Docker volume
+    volume_path = '/path/to/docker/volume/'  # Replace with the actual path
 
-    for filename, handle in request.files.items():
-        temp = NamedTemporaryFile(dir=os.curdir, delete=False, suffix=".mp3")
+    # Construct the full path to the file in the Docker volume
+    file_path = os.path.join(volume_path, filename)
 
-        handle.save(temp)
+    # Check if the file exists
+    if not os.path.exists(file_path):
+        return {'error': f'File {filename} not found in the Docker volume.'}, 404
 
-        result = model.transcribe(temp.name)
+    # Transcribe the audio file
+    result = model.transcribe(file_path)
 
-        results.append({
-            'filename': filename,
-            'transcript': result['text'],
-        })
-        temp.close()
-        os.remove(temp.name)
-    return {'results': results}
+    return {'transcript': result['text']}
 
 
 if __name__ == '__main__':
