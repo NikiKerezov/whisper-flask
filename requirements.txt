@@ -1,0 +1,6 @@
+flask~=1.1.4
+flask-cors
+luminoth
+torch~=2.2.1
+openai-whisper
+markupsafe==2.0.1
