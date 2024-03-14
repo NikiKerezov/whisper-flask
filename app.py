@@ -17,7 +17,7 @@ def handler():
         return {'error': 'No filename provided in the request.'}, 400
 
     # Define the path to the Docker volume
-    volume_path = '/path/to/docker/volume/'  # Replace with the actual path
+    volume_path = 'whisper-volume'  # Replace with the actual path
 
     # Construct the full path to the file in the Docker volume
     file_path = os.path.join(volume_path, filename)

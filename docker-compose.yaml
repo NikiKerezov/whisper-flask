@@ -6,7 +6,12 @@ services:
       - "5000:5000"
     volumes:
       - .:/code
+      - whisper-volume:/whisper-volume
     environment:
       FLASK_ENV: development
+
+volumes:
+    whisper-volume:
+      external: true
 
 

@@ -1,4 +1,4 @@
-flask~=1.1.4
+flask
 flask-cors
 luminoth
 torch~=2.2.1
