@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install git -y
 RUN pip install --upgrade -r requirements.txt
 RUN pip install openai-whisper
 RUN apt-get install -y ffmpeg
+RUN pip install TTS
 
 COPY . .
 

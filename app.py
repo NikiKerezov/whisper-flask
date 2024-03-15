@@ -1,23 +1,38 @@
 import os
 from flask import Flask, request
 import whisper
-import shutil
+from TTS.api import TTS
+import torch
 
 # Load the model
 model = whisper.load_model('small')
 app = Flask(__name__)
+volume_path = '/whisper-volume'
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
-@app.route('/', methods=['GET'])
+@app.route('/tts', methods=['POST'])
+def tts():
+    print(request.json)
+    #get command from body
+    text = request.json['text']
+    # Load the model
+    model = TTS("tts_models/en/ek1/tacotron2").to(device)
+    file_name = text.split(" ")[0] + ".wav"
+    file_path = os.path.join(volume_path, file_name)
+    #TODO: Add speaker_wav to the request
+    model.tts_to_file(text=text, file_path=file_path)
+    return {'file_path': file_path}
+
+@app.route('/stt', methods=['GET'])
 def handler():
+    print(request.args)
     # Get the filename from the query parameters
-    filename = request.args.get('filename')
+    filename = request.json['filename']
     if not filename:
         # If filename is not provided, return an error.
         return {'error': 'No filename provided in the request.'}, 400
 
-    # Define the path to the Docker volume
-    volume_path = 'whisper-volume'  # Replace with the actual path
 
     # Construct the full path to the file in the Docker volume
     file_path = os.path.join(volume_path, filename)

@@ -5,7 +5,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - .:/code
+      - .:/python-docker
       - whisper-volume:/whisper-volume
     environment:
       FLASK_ENV: development
