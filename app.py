@@ -17,11 +17,24 @@ def tts():
     #get command from body
     text = request.json['text']
     # Load the model
-    model = TTS("tts_models/en/ek1/tacotron2").to(device)
+    model_tts = TTS("tts_models/en/ek1/tacotron2").to(device)
     file_name = text.split(" ")[0] + ".wav"
     file_path = os.path.join(volume_path, file_name)
     #TODO: Add speaker_wav to the request
-    model.tts_to_file(text=text, file_path=file_path)
+    model_tts.tts_to_file(text=text, file_path=file_path)
+    return {'file_path': file_path}
+
+
+@app.route('/ttsbg', methods=['POST'])
+def ttsbg():
+    #get command from body
+    text = request.json['text']
+    # Load the model
+    model_tts = TTS("tts_models/bg/cv/vits").to(device)
+    file_name = text.split(" ")[0] + ".wav"
+    file_path = os.path.join(volume_path, file_name)
+    #TODO: Add speaker_wav to the request
+    model_tts.tts_to_file(text=text, file_path=file_path)
     return {'file_path': file_path}
 
 @app.route('/stt', methods=['GET'])
@@ -45,6 +58,7 @@ def handler():
     result = model.transcribe(file_path)
 
     return {'transcript': result['text']}
+
 
 
 if __name__ == '__main__':
