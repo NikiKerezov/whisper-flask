@@ -2,7 +2,8 @@ import os
 from flask import Flask, request
 import whisper
 from TTS.api import TTS
-import torch
+import torch 
+import datetime
 
 # Load the model
 model = whisper.load_model('small')
@@ -18,11 +19,11 @@ def tts():
     text = request.json['text']
     # Load the model
     model_tts = TTS("tts_models/en/ek1/tacotron2").to(device)
-    file_name = text.split(" ")[0] + ".wav"
+    file_name = str(datetime.datetime.now()) + ".wav"
     file_path = os.path.join(volume_path, file_name)
     #TODO: Add speaker_wav to the request
     model_tts.tts_to_file(text=text, file_path=file_path)
-    return {'file_path': file_path}
+    return {'file_name': file_name}
 
 
 @app.route('/ttsbg', methods=['POST'])
@@ -31,13 +32,13 @@ def ttsbg():
     text = request.json['text']
     # Load the model
     model_tts = TTS("tts_models/bg/cv/vits").to(device)
-    file_name = text.split(" ")[0] + ".wav"
+    file_name = str(datetime.datetime.now()) + ".wav"
     file_path = os.path.join(volume_path, file_name)
     #TODO: Add speaker_wav to the request
     model_tts.tts_to_file(text=text, file_path=file_path)
-    return {'file_path': file_path}
+    return {'file_name': file_name}
 
-@app.route('/stt', methods=['GET'])
+@app.route('/stt', methods=['POST'])
 def handler():
     print(request.args)
     # Get the filename from the query parameters
